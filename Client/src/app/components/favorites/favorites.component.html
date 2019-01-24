@@ -1,0 +1,51 @@
+<div class="col-lg-8 col-lg-offset-2">
+  <div class="row">
+    <div class="col-xs-12">
+      <div *ngFor="let favorite of favorites" class="col-xs-4">
+        <div class="row">
+          <div class="col-xs-12">
+            <div class="row">
+              <div class="col-xs-12">
+                <div class="pull-right">
+                  <a href="#myModal{{favorite._id}}" role="button" class="btn btn-large btn-danger" data-toggle="modal" *ngIf="showImage != favorite._id">
+                    <span class="glyphicon glyphicon-trash"></span>
+                  </a>
+                  <div id="myModal{{favorite._id}}" class="modal fade">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                          <h4 class="modal-title">
+                            Are you sure you want to delete the favorite?
+                          </h4>
+                        </div>
+                        <div class="modal-body">
+                          <p>If you delete it, you will not be able to recover it</p>
+                          <p>{{favorite.text}}</p>
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                          <button type="button" class="btn btn-primary" (click)="deleteFavorite(favorite._id)" data-dismiss="modal">
+                            Delete favorite
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-xs-12">
+                <img src="{{favorite.image}}" />
+                <p>{{favorite.title}}</p>
+                <p class="">{{favorite.price}}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="clearfix"></div>
