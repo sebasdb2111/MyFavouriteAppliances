@@ -15,7 +15,7 @@
   margin-bottom: 40px;
 }
 .active{
-	background: #cc1717;
+	background: #51504F;
 }
 
 .pointer{
@@ -30,7 +30,7 @@
 
 .navigation .navbar {
 	border-radius: 0px !important;
-	background: #e53c37 !important;
+	background: #EC8508 !important;
 	border: none;
 }
 
@@ -39,7 +39,7 @@
 }
 
 .navigation .navbar a:hover{
-	background: #cc1717 !important;
+	background: #F1592A !important;
 }
 
 .navigation .navbar .dropdown-menu *{
@@ -47,7 +47,7 @@
 }
 
 .navbar-default .navbar-nav>.open>a, .navbar-default .navbar-nav>.open>a:focus{
-	background: #cc1717 !important;
+	background: #51504F !important;
 }
 
 
@@ -169,7 +169,7 @@
 }
 
 #user-card .stats a:hover .number-stats{
-	color: #cc1717;
+	color: #51504F;
 }
 
 #user-card .label-stats,

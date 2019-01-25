@@ -1,24 +1,16 @@
-# MyFavouriteAppliancesApi
+# MyFavouriteAppliances
 
-Api Rest develop in JavaScript under ExpressJS Framework and MongoDB like database
+Website developed in JavaScript and ExpressJS Framework and MongoDB like database for the Api and TypeScript and Angular framework for the client
 
 REQUIRE TOOLS
 ----------------------
 + NPM
 + MongoDB
 
-CREATE DATABASE
+HOW TO INITIALIZE
 ----------------------
-Install MongoDB in your machine and create a database called MyFavouriteAppliances
 
-NPM
---------
-Exectute npm install in the project
-
-START PROJECT
------------------
-When NPM has installed all dependencies, you can execute 'npm start' to test the API Rest
-
-REQUEST
-----------
-Import the MyFavoriteAppliaces.postman_collection.json in you Postman Client and test the API Rest requests
+1. Clone the repository
+2. CREATE DATABASE: Install MongoDB in your machine and create a database called MyFavouriteAppliances
+2. NPM: Open a terminal and go to MyFavouriteAppliances/Api and run "npm install" when NPM finished run "npm start". Open a new terminal and go to MyFavouriteAppliances/Client and run "npm install" when NPM finished run "npm start"
+4. Open a web browser and go to http://localhost:4200
