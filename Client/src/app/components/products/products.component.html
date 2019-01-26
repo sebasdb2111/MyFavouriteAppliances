@@ -11,7 +11,7 @@
 		</p>
 	</div>
 </div>
-<div class="col-lg-8 col-lg-offset-2">
+<div class="col-lg-8 col-lg-offset-2" *ngIf="products">
 	<div class="row">
 		<div class="col-xs-12">
 			<div *ngFor="let product of products" class="col-xs-4">
@@ -36,4 +36,12 @@
 			</div>
 		</div>
 	</div>
+</div>
+<div class="col-lg-8 col-lg-offset-2 text-center" *ngIf="!products && showLoading">
+  <span class="loading">Loading...    </span>
+  <img class="pacman" src="../../../assets/Pacman-0.9s-200px%20-%20copia.gif"/>
+  <!--<div class="col-lg-4">-->
+  <!--</div>-->
+  <!--<div class="col-lg-4">-->
+  <!--</div>-->
 </div>

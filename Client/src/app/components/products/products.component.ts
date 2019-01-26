@@ -20,6 +20,7 @@ export class ProductsComponent implements OnInit {
   public favorite: Favorite;
   public title: string;
   public products: Product[];
+  public showLoading: Boolean;
 
   constructor(
     private _userService: UserService,
@@ -35,7 +36,7 @@ export class ProductsComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.getDishwasher();
+
   }
 
   userLogin() {
@@ -46,6 +47,7 @@ export class ProductsComponent implements OnInit {
   }
 
   getDishwasher() {
+    this.showLoading = true;
     this._productService.getDishwashers().subscribe(
       response => {
         this.products = response.products;
@@ -58,6 +60,7 @@ export class ProductsComponent implements OnInit {
   }
 
   getSmallAppliances() {
+    this.showLoading = true;
     this._productService.getSmallAppliances().subscribe(
       response => {
         this.products = response.products;
