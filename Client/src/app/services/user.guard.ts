@@ -14,11 +14,9 @@ export class UserGuard implements CanActivate {
       && (identity.role === 'ROLE_USER' || identity.role === 'ROLE_ADMIN'
         || identity.role === 'role_admin' || identity.role === 'role_user'
       )) {
-      console.log('entra en true');
       return true;
     } else {
       this._router.navigate(['/login']);
-      console.log('entra en falser' + identity.role);
       return false;
     }
   }

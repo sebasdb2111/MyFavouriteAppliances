@@ -8,17 +8,18 @@ let product = new Product();
 let mongoosePaginate = require('mongoose-pagination');
 let today = moment().format('L');
 
-function backupProduct(product, category) {
+function backupProduct(product) {
     if (product) {
         let query = {"title": product.title};
         Product.findOne(query, (err, data) => {
             if (!data) {
-                // console.log(product);
+                let price = product.price;
+                let newPrice = Number(price.replace('€', ''));
                 let newProduct = new Product();
                 newProduct.category = product.category;
                 newProduct.title = product.title;
-                newProduct.price = product.price;
-                newProduct.image = product.image
+                newProduct.price = newPrice;
+                newProduct.image = product.image;
                 newProduct.updatedAt = product.updatedAt;
                 newProduct.save((err, newProductStored) => {
                     if (err) {
@@ -90,9 +91,9 @@ function smallAppliances(req, res) {
                 webpage.map(dishwasher => {
                     backupProduct(dishwasher, 'small-appliances');
                 });
-                findProducts('small-appliances', req.params.orderBy, res);
+                findProducts('small-appliances', req.query.orderBy, res);
             } else {
-                findProducts('small-appliances', req.params.orderBy, res);
+                findProducts('small-appliances', req.query.orderBy, res);
             }
         }
     );
@@ -127,9 +128,9 @@ function dishwashers(req, res) {
                 webpage.map(dishwasher => {
                     backupProduct(dishwasher, 'dishwasher');
                 });
-                findProducts('dishwashers', req.params.orderBy, res);
+                findProducts('dishwashers', req.query.orderBy, res);
             } else {
-                findProducts('dishwashers', req.params.orderBy, res);
+                findProducts('dishwashers', req.query.orderBy, res);
             }
         }
     );

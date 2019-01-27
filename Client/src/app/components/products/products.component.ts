@@ -21,6 +21,7 @@ export class ProductsComponent implements OnInit {
   public title: string;
   public products: Product[];
   public showLoading: Boolean;
+  public category: string;
 
   constructor(
     private _userService: UserService,
@@ -46,12 +47,17 @@ export class ProductsComponent implements OnInit {
     }
   }
 
-  getDishwasher() {
+  orderBy(category, orderBy) {
+    if (category === 'dishwashers') { this.getDishwasher(orderBy); }
+    if (category === 'small-appliances') { this.getSmallAppliances(orderBy); }
+  }
+
+  getDishwasher(orderBy) {
+    this.category = 'dishwashers';
     this.showLoading = true;
-    this._productService.getDishwashers().subscribe(
+    this._productService.getDishwashers(orderBy).subscribe(
       response => {
         this.products = response.products;
-        console.log(response);
       },
       error => {
         console.log(<any>error);
@@ -59,12 +65,12 @@ export class ProductsComponent implements OnInit {
     );
   }
 
-  getSmallAppliances() {
+  getSmallAppliances(orderBy) {
+    this.category = 'small-appliances';
     this.showLoading = true;
-    this._productService.getSmallAppliances().subscribe(
+    this._productService.getSmallAppliances(orderBy).subscribe(
       response => {
         this.products = response.products;
-        console.log(response);
       },
       error => {
         console.log(<any>error);

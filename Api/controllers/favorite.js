@@ -31,7 +31,6 @@ async function getFavorites(req, res) {
         return productId;
     });
     const pArray = favorites.map(async (favorite) => {
-        console.log(favorite.productId);
         const product = Product.findById(favorite.productId).exec(async (err, product) => {
             product.favoriteId = favorite.productId;
             return product;
@@ -39,7 +38,6 @@ async function getFavorites(req, res) {
         return product;
     });
     const productFavorite = await Promise.all(pArray);
-    console.log(productFavorite);
     return res.status(200).send({
         favorites: productFavorite
     });
