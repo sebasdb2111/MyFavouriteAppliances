@@ -11,13 +11,13 @@ export class ProductService {
     this.url = GLOBAL.url;
   }
 
-  getDishwashers(): Observable<any> {
+  getDishwashers(orderBy): Observable<any> {
     const headers = new HttpHeaders().set('Content-Type', 'application/json');
-    return this._http.get(this.url + 'dishwashers', {headers: headers});
+    return this._http.get(this.url + 'dishwashers', {headers: headers, params: {'orderBy': orderBy}});
   }
 
-  getSmallAppliances(): Observable<any> {
+  getSmallAppliances(orderBy): Observable<any> {
     const headers = new HttpHeaders().set('Content-Type', 'application/json');
-    return this._http.get(this.url + 'small-appliances', {headers: headers});
+    return this._http.get(this.url + 'small-appliances', {headers: headers, params: {'orderBy': orderBy}});
   }
 }

@@ -6,7 +6,6 @@ let Follow = require('../models/follow');
 
 function saveFollow(req, res) {
     let params = req.body;
-    console.log(params);
     let follow = new Follow();
     follow.user = req.user.sub;
     follow.follow = params.followed;
@@ -56,7 +55,6 @@ function getFollowingUsers(req, res) {
 }
 
 async function followUserIds(user_id) {
-    console.log(user_id);
     let following = await Follow.find({"user": user_id}).select({
         '_id': 0,
         '__v': 0,
@@ -64,7 +62,6 @@ async function followUserIds(user_id) {
     }).exec((err, follows) => {
         return follows;
     });
-    console.log(following);
     let followed = await Follow.find({"follow": user_id}).select({
         '_id': 0,
         '__v': 0,

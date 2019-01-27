@@ -30,7 +30,6 @@ export class FavoriteService {
   }
 
   deleteFavorite(token, id): Observable<any> {
-    console.log('DELETE 2');
     const headers = new HttpHeaders()
       .set('Content-Type', 'application/json')
       .set('Authorization', token);
