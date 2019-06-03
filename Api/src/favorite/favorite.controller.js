@@ -2,15 +2,15 @@
 
 let moment = require('moment');
 let mongoosePaginate = require('mongoose-pagination');
-let Favorite = require('../models/favorite');
-let Product = require('../models/product');
+let FavoriteController = require('./favorite.model');
+let Product = require('../product/product.model');
 
 function saveFavorite(req, res) {
     let params = req.body;
     if (!params.productId) {
         return res.status(200).send({message: 'You should send a product'});
     }
-    let favorite = new Favorite();
+    let favorite = new FavoriteController();
     favorite.userId = req.user.sub;
     favorite.productId = params.productId;
     favorite.createdAt = moment().format('L');
@@ -19,14 +19,14 @@ function saveFavorite(req, res) {
             return res.status(500).send({message: 'Error when you save a favorite'});
         }
         if (!favoriteStored) {
-            return res.status(404).send({message: 'Favorite has not been save'});
+            return res.status(404).send({message: 'FavoriteController has not been save'});
         }
         return res.status(200).send({favorite: favoriteStored});
     });
 }
 
 async function getFavorites(req, res) {
-    let favorites = await Favorite.find({"userId": req.user.sub}).exec(async (err, favorite) => {
+    let favorites = await FavoriteController.find({"userId": req.user.sub}).exec(async (err, favorite) => {
         let productId = favorite[0].productId;
         return productId;
     });
@@ -45,11 +45,11 @@ async function getFavorites(req, res) {
 
 function deleteFavorite(req, res) {
     let productId = req.params.id;
-    Favorite.find({'userId': req.user.sub, 'productId': productId}).remove(err => {
+    FavoriteController.find({'userId': req.user.sub, 'productId': productId}).remove(err => {
         if (err) {
             return res.status(500).send({message: 'Error in favorite deletion'});
         }
-        return res.status(200).send({message: 'Favorite deleted correctly'});
+        return res.status(200).send({message: 'FavoriteController deleted correctly'});
     });
 }
 

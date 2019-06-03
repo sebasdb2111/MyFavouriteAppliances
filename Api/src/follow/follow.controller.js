@@ -1,17 +1,17 @@
 'use strict';
 
 let mongoosePaginate = require('mongoose-pagination');
-let User = require('../models/user');
-let Follow = require('../models/follow');
+let User = require('../user/user.model');
+let FollowController = require('./follow.model');
 
 function saveFollow(req, res) {
     let params = req.body;
-    let follow = new Follow();
+    let follow = new FollowController();
     follow.user = req.user.sub;
     follow.follow = params.followed;
     follow.save((err, followStored) => {
         if (err) return res.status(500).send({message: 'Error to save follow'});
-        if (!followStored) return res.status(404).send({message: 'Follow has not save'});
+        if (!followStored) return res.status(404).send({message: 'FollowController has not save'});
         return res.status(200).send({follow: followStored});
     });
 }
@@ -19,7 +19,7 @@ function saveFollow(req, res) {
 function deleteFollow(req, res) {
     let user = req.user.sub;
     let follow = req.params.id;
-    Follow.find({'user': user, 'follow': follow}).remove(err => {
+    FollowController.find({'user': user, 'follow': follow}).remove(err => {
         if (err) return res.status(500).send({message: 'Error al dejar de seguir'});
         return res.status(200).send({message: 'El follow se ha eliminado!!'});
     });
@@ -37,7 +37,7 @@ function getFollowingUsers(req, res) {
         page = req.params.id;
     }
     let itemsPerPage = 4;
-    Follow.find({user: userId}).populate({path: 'follow'}).paginate(page, itemsPerPage, (err, follows, total) => {
+    FollowController.find({user: userId}).populate({path: 'follow'}).paginate(page, itemsPerPage, (err, follows, total) => {
         if (err) return res.status(500).send({message: 'Server error'});
         if (!follows) return res.status(404).send({
             message: '\n' + 'You are not following any user'
@@ -55,14 +55,14 @@ function getFollowingUsers(req, res) {
 }
 
 async function followUserIds(user_id) {
-    let following = await Follow.find({"user": user_id}).select({
+    let following = await FollowController.find({"user": user_id}).select({
         '_id': 0,
         '__v': 0,
         'user': 0
     }).exec((err, follows) => {
         return follows;
     });
-    let followed = await Follow.find({"follow": user_id}).select({
+    let followed = await FollowController.find({"follow": user_id}).select({
         '_id': 0,
         '__v': 0,
         'follow': 0
@@ -101,7 +101,7 @@ function getFollowedUsers(req, res) {
     }
 
     let itemsPerPage = 4;
-    Follow.find({followed: userId}).populate('user').paginate(page, itemsPerPage, (err, follows, total) => {
+    FollowController.find({followed: userId}).populate('user').paginate(page, itemsPerPage, (err, follows, total) => {
         if (err) return res.status(500).send({message: 'Error en el servidor'});
         if (!follows) return res.status(404).send({message: 'No te sigue ningun usuario'});
         followUserIds(req.user.sub).then((value) => {
@@ -118,9 +118,9 @@ function getFollowedUsers(req, res) {
 
 function getMyFollows(req, res) {
     let userId = req.user.sub;
-    let find = Follow.find({user: userId});
+    let find = FollowController.find({user: userId});
     if (req.params.followed) {
-        find = Follow.find({follow: userId});
+        find = FollowController.find({follow: userId});
     }
 
     find.populate('user follow').exec((err, follows) => {

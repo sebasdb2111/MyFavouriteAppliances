@@ -6,7 +6,7 @@ let port = 3800;
 
 // Database connection
 mongoose.Promise = global.Promise;
-mongoose.connect('mongodb://localhost:27017/MyFavouriteAppliances')
+mongoose.connect('mongodb://localhost:27017/kultr')
     .then(() => {
         console.log("Database conection Ok");
         // Server creation
