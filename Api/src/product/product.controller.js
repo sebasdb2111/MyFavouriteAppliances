@@ -1,21 +1,21 @@
 'use strict';
 
 let moment = require('moment');
-let Product = require('../models/product');
+let ProductController = require('./product.model');
 let cheerio = require('cheerio');
 let request = require('request');
-let product = new Product();
+let product = new ProductController();
 let mongoosePaginate = require('mongoose-pagination');
 let today = moment().format('L');
 
 function backupProduct(product) {
     if (product) {
         let query = {"title": product.title};
-        Product.findOne(query, (err, data) => {
+        ProductController.findOne(query, (err, data) => {
             if (!data) {
                 let price = product.price;
                 let newPrice = Number(price.replace('€', ''));
-                let newProduct = new Product();
+                let newProduct = new ProductController();
                 newProduct.category = product.category;
                 newProduct.title = product.title;
                 newProduct.price = newPrice;
@@ -26,7 +26,7 @@ function backupProduct(product) {
                         console.log("Error to save product");
                     }
                     if (!newProductStored) {
-                        console.log("Product has not save");
+                        console.log("ProductController has not save");
                     }
                 });
             } else {
@@ -46,7 +46,7 @@ function backupProduct(product) {
 function findProducts(category, orderBy, res) {
     let page = 1;
     let itemsPerPAge = 20;
-    Product.find({"category": category})
+    ProductController.find({"category": category})
         .sort(orderBy)
         .paginate(page, itemsPerPAge, (err, products, total) => {
             if (err) {

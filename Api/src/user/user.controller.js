@@ -2,15 +2,15 @@
 
 let bcrypt = require('bcrypt-nodejs');
 let mongoosePaginate = require('mongoose-pagination');
-let jwt = require('../services/jwt');
-let User = require('../models/user');
-let Follow = require('../models/follow');
-let Favorite = require('../models/favorite');
-let Product = require('../models/product');
+let jwt = require('../../services/jwt');
+let UserController = require('./user.model');
+let Follow = require('../follow/follow.model');
+let Favorite = require('../favorite/favorite.model');
+let Product = require('../product/product.model');
 
 function saveUser(req, res) {
     let params = req.body;
-    let user = new User();
+    let user = new UserController();
     if (params.name && params.surname &&
         params.username && params.email && params.password) {
         user.name = params.name;
@@ -18,15 +18,15 @@ function saveUser(req, res) {
         user.username = params.username;
         user.email = params.email;
         user.role = 'ROLE_USER';
-        User.find({
+        UserController.find({
             $or: [
                 {email: user.email.toLowerCase()},
                 {username: user.username.toLowerCase()}
             ]
         }).exec((err, users) => {
-            if (err) return res.status(500).send({message: 'User request error'});
+            if (err) return res.status(500).send({message: 'UserController request error'});
             if (users && users.length >= 1) {
-                return res.status(200).send({message: 'User exist'});
+                return res.status(200).send({message: 'UserController exist'});
             } else {
                 bcrypt.hash(params.password, null, null, (err, hash) => {
                     user.password = hash;
@@ -35,7 +35,7 @@ function saveUser(req, res) {
                         if (userStored) {
                             res.status(200).send({user: userStored});
                         } else {
-                            res.status(404).send({message: 'User not save'});
+                            res.status(404).send({message: 'UserController not save'});
                         }
                     });
                 });
@@ -55,7 +55,7 @@ function updateUser(req, res) {
     if (userId != req.user.sub) {
         return res.status(500).send({message: 'You have not got permission for update this user'});
     }
-    User.find({
+    UserController.find({
         $or: [
             {email: update.email.toLowerCase()},
             {username: update.username.toLowerCase()}
@@ -66,7 +66,7 @@ function updateUser(req, res) {
             if (user && user._id != userId) user_isset = true;
         });
         if (user_isset) return res.status(404).send({message: 'Los datos ya están en uso'});
-        User.findByIdAndUpdate(userId, update, {new: true}, (err, userUpdated) => {
+        UserController.findByIdAndUpdate(userId, update, {new: true}, (err, userUpdated) => {
             if (err) return res.status(500).send({message: 'Error en la petición'});
             if (!userUpdated) return res.status(404).send({message: 'No se ha podido actualizar el usuario'});
             return res.status(200).send({user: userUpdated});
@@ -79,7 +79,7 @@ function loginUser(req, res) {
     let email = params.email;
     let password = params.password;
 
-    User.findOne({email: email}, (err, user) => {
+    UserController.findOne({email: email}, (err, user) => {
         if (err) return res.status(500).send({message: 'Request error'});
         if (user) {
             bcrypt.compare(password, user.password, (err, check) => {
@@ -93,20 +93,20 @@ function loginUser(req, res) {
                         return res.status(200).send({user});
                     }
                 } else {
-                    return res.status(404).send({message: 'User can not identify'});
+                    return res.status(404).send({message: 'UserController can not identify 1'});
                 }
             });
         } else {
-            return res.status(404).send({message: 'User can not identify'});
+            return res.status(404).send({message: 'UserController can not identify 2'});
         }
     });
 }
 
 async function getUser(req, res) {
     let userId = req.params.id;
-    User.findById(userId, async (err, user) => {
+    UserController.findById(userId, async (err, user) => {
         if (err) return res.status(500).send({message: 'Request error'});
-        if (!user) return res.status(404).send({message: 'User not exist'});
+        if (!user) return res.status(404).send({message: 'UserController not exist'});
         followThisUser(req.user.sub, userId).then((value) => {
             user.password = undefined;
             return res.status(200).send({
@@ -153,7 +153,7 @@ function getUsers(req, res) {
         page = req.params.page;
     }
     let itemsPerPage = 5;
-    User.find().sort('_id').paginate(page, itemsPerPage, (err, users, total) => {
+    UserController.find().sort('_id').paginate(page, itemsPerPage, (err, users, total) => {
         if (err) return res.status(500).send({message: 'Request error'});
         if (!users) return res.status(404).send({message: 'Not exist users'});
         followUserIds(identity_user_id).then((value) => {

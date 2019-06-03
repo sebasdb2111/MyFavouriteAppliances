@@ -1,9 +1,9 @@
 'use strict';
 
 let express = require('express');
-let UserController = require('../controllers/user');
+let UserController = require('./user.controller');
 let api = express.Router();
-let md_auth = require('../middlewares/authenticated');
+let md_auth = require('../../middlewares/authenticated');
 
 api.post('/register', UserController.saveUser);
 api.put('/update-user/:id', md_auth.ensureAuth, UserController.updateUser);

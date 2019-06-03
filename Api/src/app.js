@@ -5,10 +5,10 @@ let bodyParser = require('body-parser');
 let app = express();
 
 // Load Routes
-let user_routes = require('./routes/user');
-let follow_routes = require('./routes/follow');
-let favorite_routes = require('./routes/favorite');
-let product_routes = require('./routes/products');
+let user_routes = require('./user/user.routes');
+let follow_routes = require('./follow/follow.routes');
+let favorite_routes = require('./favorite/favorite.routes');
+let product_routes = require('./product/products.routes');
 
 // Middlewares
 app.use(bodyParser.urlencoded({extended: false}));
