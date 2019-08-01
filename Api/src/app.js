@@ -1,14 +1,14 @@
 'use strict';
 
-let express = require('express');
-let bodyParser = require('body-parser');
-let app = express();
+const express = require('express');
+const bodyParser = require('body-parser');
+const app = express();
 
 // Load Routes
-let user_routes = require('./user/user.routes');
-let follow_routes = require('./follow/follow.routes');
-let favorite_routes = require('./favorite/favorite.routes');
-let product_routes = require('./product/products.routes');
+const user_routes = require('./user/user.routes');
+const follow_routes = require('./follow/follow.routes');
+const favorite_routes = require('./favorite/favorite.routes');
+const product_routes = require('./product/products.routes');
 
 // Middlewares
 app.use(bodyParser.urlencoded({extended: false}));
@@ -20,7 +20,6 @@ app.use((req, res, next) => {
     res.header('Access-Control-Allow-Headers', 'Authorization, X-API-KEY, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Allow-Request-Method');
     res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, DELETE');
     res.header('Allow', 'GET, POST, OPTIONS, PUT, DELETE');
-
     next();
 });
 

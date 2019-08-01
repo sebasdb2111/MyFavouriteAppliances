@@ -1,8 +1,8 @@
 'use strict';
 
-let express = require('express');
-let ProductController = require('./product.controller');
-let api = express.Router();
+const express = require('express');
+const ProductController = require('./product.controller');
+const api = express.Router();
 
 api.get("/small-appliances", ProductController.smallAppliances);
 api.get("/dishwashers", ProductController.dishwashers);

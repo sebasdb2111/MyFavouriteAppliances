@@ -1,21 +1,22 @@
 'use strict';
 
-let moment = require('moment');
-let ProductController = require('./product.model');
-let cheerio = require('cheerio');
-let request = require('request');
-let product = new ProductController();
-let mongoosePaginate = require('mongoose-pagination');
-let today = moment().format('L');
+const moment = require('moment');
+const ProductController = require('./product.model');
+const cheerio = require('cheerio');
+const request = require('request');
+const product = new ProductController();
+const mongoosePaginate = require('mongoose-pagination');
+const today = moment().format('L');
 
 function backupProduct(product) {
     if (product) {
-        let query = {"title": product.title};
+        const query = {"title": product.title};
         ProductController.findOne(query, (err, data) => {
             if (!data) {
-                let price = product.price;
-                let newPrice = Number(price.replace('€', ''));
-                let newProduct = new ProductController();
+                const price = product.price;
+                const newPrice = Number(price.replace('€', ''));
+                const newProduct = new ProductController();
+
                 newProduct.category = product.category;
                 newProduct.title = product.title;
                 newProduct.price = newPrice;
@@ -30,9 +31,10 @@ function backupProduct(product) {
                     }
                 });
             } else {
-                for (var title in data.title) {
+                for (let title in data.title) {
                     data[title] = product[title];
                 }
+
                 data.save((err) => {
                     if (err) {
                         console.log("Error when you save a product");
@@ -44,17 +46,19 @@ function backupProduct(product) {
 }
 
 function findProducts(category, orderBy, res) {
-    let page = 1;
-    let itemsPerPAge = 20;
+    const page = 1;
+    const itemsPerPAge = 20;
     ProductController.find({"category": category})
         .sort(orderBy)
         .paginate(page, itemsPerPAge, (err, products, total) => {
             if (err) {
                 return res.status(500).send({message: 'Request error'});
             }
+
             if (!products) {
                 return res.status(404).send({message: 'Products not exists'});
             }
+
             return res.status(200).send({
                 products,
                 total,
@@ -70,16 +74,20 @@ function smallAppliances(req, res) {
             if (!error && response.statusCode == 200) {
                 const $ = cheerio.load(html);
                 const webpage = [];
+
                 $('.search-results-product').each((i, el) => {
                     const resTitle = $(el)
                         .find('.img-responsive')
                         .attr('alt');
+
                     const resPrice = $(el)
                         .find('.section-title')
                         .text();
+
                     const resImage = $(el)
                         .find('.img-responsive')
                         .attr('src');
+
                     webpage[i] = {
                         category: 'small-appliances',
                         title: resTitle,
@@ -106,17 +114,21 @@ function dishwashers(req, res) {
             if (!error && response.statusCode == 200) {
                 const $ = cheerio.load(html);
                 const webpage = [];
+
                 $('.search-results-product').each((i, el) => {
                     const resTitle = $(el)
                         .find('.article-brand')
                         .attr('alt');
+
                     const resPrice = $(el)
                         .find('.section-title')
                         .text();
+
                     const resImage = $(el)
                         .find('.sales-search-wrapper')
                         .children()
                         .attr('src');
+
                     webpage[i] = {
                         category: 'dishwashers',
                         title: resTitle,
@@ -128,6 +140,7 @@ function dishwashers(req, res) {
                 webpage.map(dishwasher => {
                     backupProduct(dishwasher, 'dishwasher');
                 });
+
                 findProducts('dishwashers', req.query.orderBy, res);
             } else {
                 findProducts('dishwashers', req.query.orderBy, res);

@@ -1,9 +1,9 @@
 'use strict';
 
-let express = require('express');
-let FavoriteController = require('./favorite.controller');
-let api = express.Router();
-let md_auth = require('../../middlewares/authenticated');
+const express = require('express');
+const FavoriteController = require('./favorite.controller');
+const api = express.Router();
+const md_auth = require('../../middlewares/authenticated');
 
 api.post('/favorite', md_auth.ensureAuth, FavoriteController.saveFavorite);
 api.get('/favorites/:page?', md_auth.ensureAuth, FavoriteController.getFavorites);

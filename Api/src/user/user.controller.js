@@ -1,16 +1,17 @@
 'use strict';
 
-let bcrypt = require('bcrypt-nodejs');
-let mongoosePaginate = require('mongoose-pagination');
-let jwt = require('../../services/jwt');
-let UserController = require('./user.model');
-let Follow = require('../follow/follow.model');
-let Favorite = require('../favorite/favorite.model');
-let Product = require('../product/product.model');
+const bcrypt = require('bcrypt-nodejs');
+const mongoosePaginate = require('mongoose-pagination');
+const jwt = require('../../services/jwt');
+const UserController = require('./user.model');
+const Follow = require('../follow/follow.model');
+const Favorite = require('../favorite/favorite.model');
+const Product = require('../product/product.model');
 
 function saveUser(req, res) {
-    let params = req.body;
-    let user = new UserController();
+    const params = req.body;
+    const user = new UserController();
+
     if (params.name && params.surname &&
         params.username && params.email && params.password) {
         user.name = params.name;
@@ -24,14 +25,20 @@ function saveUser(req, res) {
                 {username: user.username.toLowerCase()}
             ]
         }).exec((err, users) => {
-            if (err) return res.status(500).send({message: 'UserController request error'});
+            if (err) {
+                return res.status(500).send({message: 'UserController request error'});
+            }
+
             if (users && users.length >= 1) {
                 return res.status(200).send({message: 'UserController exist'});
             } else {
                 bcrypt.hash(params.password, null, null, (err, hash) => {
                     user.password = hash;
                     user.save((err, userStored) => {
-                        if (err) return res.status(500).send({message: 'Error when you save a user'});
+                        if (err) {
+                            return res.status(500).send({message: 'Error when you save a user'});
+                        }
+
                         if (userStored) {
                             res.status(200).send({user: userStored});
                         } else {
@@ -49,12 +56,14 @@ function saveUser(req, res) {
 }
 
 function updateUser(req, res) {
-    var userId = req.params.id;
-    var update = req.body;
+    const userId = req.params.id;
+    const update = req.body;
     delete update.password;
+
     if (userId != req.user.sub) {
         return res.status(500).send({message: 'You have not got permission for update this user'});
     }
+
     UserController.find({
         $or: [
             {email: update.email.toLowerCase()},
@@ -63,24 +72,38 @@ function updateUser(req, res) {
     }).exec((err, users) => {
         var user_isset = false;
         users.forEach((user) => {
-            if (user && user._id != userId) user_isset = true;
+            if (user && user._id != userId) {
+                user_isset = true;
+            }
         });
-        if (user_isset) return res.status(404).send({message: 'Los datos ya están en uso'});
+        if (user_isset) {
+            return res.status(404).send({message: 'Los datos ya están en uso'});
+        }
+
         UserController.findByIdAndUpdate(userId, update, {new: true}, (err, userUpdated) => {
-            if (err) return res.status(500).send({message: 'Error en la petición'});
-            if (!userUpdated) return res.status(404).send({message: 'No se ha podido actualizar el usuario'});
+            if (err) {
+                return res.status(500).send({message: 'Error en la petición'});
+            }
+
+            if (!userUpdated) {
+                return res.status(404).send({message: 'No se ha podido actualizar el usuario'});
+            }
+
             return res.status(200).send({user: userUpdated});
         });
     });
 }
 
 function loginUser(req, res) {
-    let params = req.body;
-    let email = params.email;
-    let password = params.password;
+    const params = req.body;
+    const email = params.email;
+    const password = params.password;
 
     UserController.findOne({email: email}, (err, user) => {
-        if (err) return res.status(500).send({message: 'Request error'});
+        if (err) {
+            return res.status(500).send({message: 'Request error'});
+        }
+
         if (user) {
             bcrypt.compare(password, user.password, (err, check) => {
                 if (check) {
@@ -103,10 +126,16 @@ function loginUser(req, res) {
 }
 
 async function getUser(req, res) {
-    let userId = req.params.id;
+    const userId = req.params.id;
     UserController.findById(userId, async (err, user) => {
-        if (err) return res.status(500).send({message: 'Request error'});
-        if (!user) return res.status(404).send({message: 'UserController not exist'});
+        if (err) {
+            return res.status(500).send({message: 'Request error'});
+        }
+
+        if (!user) {
+            return res.status(404).send({message: 'UserController not exist'});
+        }
+
         followThisUser(req.user.sub, userId).then((value) => {
             user.password = undefined;
             return res.status(200).send({
@@ -120,24 +149,31 @@ async function getUser(req, res) {
 }
 
 async function followThisUser(identity_user_id, user_id) {
-    let following = await Follow.findOne({"user": identity_user_id, "follow": user_id}).exec((err, follow) => {
-        if (err) return handleError(err);
+    const following = await Follow.findOne({"user": identity_user_id, "follow": user_id}).exec((err, follow) => {
+        if (err) {
+            return handleError(err);
+        }
         return follow;
     });
-    let followed = await Follow.findOne({"user": user_id, "follow": identity_user_id}).exec((err, follow) => {
-        if (err) return handleError(err);
+
+    const followed = await Follow.findOne({"user": user_id, "follow": identity_user_id}).exec((err, follow) => {
+        if (err) {
+            return handleError(err);
+        }
         return follow;
     });
-    let favorites = await Favorite.find({"userId": user_id}).exec(async (err, favorite) => {
-        let productId = favorite[0].productId;
-        return productId;
+
+    const favorites = await Favorite.find({"userId": user_id}).exec(async (err, favorite) => {
+        return favorite[0].productId;
     });
+
     const pArray = favorites.map(async (favorite) => {
         const dataProduct = Product.findById(favorite.productId).exec(async (err, product) => {
             return product;
         });
         return dataProduct;
     });
+
     const productFavorite = await Promise.all(pArray);
     return {
         following: following,
@@ -147,15 +183,22 @@ async function followThisUser(identity_user_id, user_id) {
 }
 
 function getUsers(req, res) {
-    let identity_user_id = req.user.sub;
+    const identity_user_id = req.user.sub;
     let page = 1;
     if (req.params.page) {
         page = req.params.page;
     }
-    let itemsPerPage = 5;
+
+    const itemsPerPage = 5;
     UserController.find().sort('_id').paginate(page, itemsPerPage, (err, users, total) => {
-        if (err) return res.status(500).send({message: 'Request error'});
-        if (!users) return res.status(404).send({message: 'Not exist users'});
+        if (err) {
+            return res.status(500).send({message: 'Request error'});
+        }
+
+        if (!users) {
+            return res.status(404).send({message: 'Not exist users'});
+        }
+
         followUserIds(identity_user_id).then((value) => {
             return res.status(200).send({
                 users,
@@ -170,14 +213,15 @@ function getUsers(req, res) {
 }
 
 async function followUserIds(user_id) {
-    let following = await Follow.find({"user": user_id}).select({
+    const following = await Follow.find({"user": user_id}).select({
         '_id': 0,
         '__v': 0,
         'user': 0
     }).exec((err, follows) => {
         return follows;
     });
-    let followed = await Follow.find({"follow": user_id}).select({
+
+    const followed = await Follow.find({"follow": user_id}).select({
         '_id': 0,
         '__v': 0,
         'follow': 0
@@ -185,21 +229,21 @@ async function followUserIds(user_id) {
         return follows;
     });
 
-    let following_clean = [];
+    const following_clean = [];
     following.forEach((follow) => {
         following_clean.push(follow.follow);
     });
 
-    let followed_clean = [];
+    const followed_clean = [];
     followed.forEach((follow) => {
         followed_clean.push(follow.user);
     });
+
     return {
         following: following_clean,
         followed: followed_clean
     }
 }
-
 
 module.exports = {
     saveUser,

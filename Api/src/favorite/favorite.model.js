@@ -1,8 +1,8 @@
 'use strict';
 
-let mongoose = require('mongoose');
-let Schema = mongoose.Schema;
-let FavoriteSchema = Schema({
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
+const FavoriteSchema = Schema({
     userId: String,
     productId: String,
     createdAt: String

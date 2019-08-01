@@ -1,12 +1,13 @@
 'use strict';
 
-let mongoosePaginate = require('mongoose-pagination');
-let User = require('../user/user.model');
-let FollowController = require('./follow.model');
+const mongoosePaginate = require('mongoose-pagination');
+const User = require('../user/user.model');
+const FollowController = require('./follow.model');
 
 function saveFollow(req, res) {
-    let params = req.body;
-    let follow = new FollowController();
+    const params = req.body;
+    const follow = new FollowController();
+
     follow.user = req.user.sub;
     follow.follow = params.followed;
     follow.save((err, followStored) => {
@@ -17,8 +18,9 @@ function saveFollow(req, res) {
 }
 
 function deleteFollow(req, res) {
-    let user = req.user.sub;
-    let follow = req.params.id;
+    const user = req.user.sub;
+    const follow = req.params.id;
+
     FollowController.find({'user': user, 'follow': follow}).remove(err => {
         if (err) return res.status(500).send({message: 'Error al dejar de seguir'});
         return res.status(200).send({message: 'El follow se ha eliminado!!'});
@@ -30,18 +32,26 @@ function getFollowingUsers(req, res) {
     if (req.params.id && req.params.page) {
         userId = req.params.id;
     }
+
     let page = 1;
-    if (req.params.page) {
-        page = req.params.page;
-    } else {
+    if (!req.params.page) {
         page = req.params.id;
+    } else {
+        page = req.params.page;
     }
-    let itemsPerPage = 4;
+
+    const itemsPerPage = 4;
     FollowController.find({user: userId}).populate({path: 'follow'}).paginate(page, itemsPerPage, (err, follows, total) => {
-        if (err) return res.status(500).send({message: 'Server error'});
-        if (!follows) return res.status(404).send({
-            message: '\n' + 'You are not following any user'
-        });
+        if (err) {
+            return res.status(500).send({message: 'Server error'});
+        }
+
+        if (!follows) {
+            return res.status(404).send({
+                message: '\n' + 'You are not following any user'
+            });
+        }
+
         followUserIds(req.user.sub).then((value) => {
             return res.status(200).send({
                 total: total,
@@ -55,14 +65,15 @@ function getFollowingUsers(req, res) {
 }
 
 async function followUserIds(user_id) {
-    let following = await FollowController.find({"user": user_id}).select({
+    const following = await FollowController.find({"user": user_id}).select({
         '_id': 0,
         '__v': 0,
         'user': 0
     }).exec((err, follows) => {
         return follows;
     });
-    let followed = await FollowController.find({"follow": user_id}).select({
+
+    const followed = await FollowController.find({"follow": user_id}).select({
         '_id': 0,
         '__v': 0,
         'follow': 0
@@ -70,12 +81,12 @@ async function followUserIds(user_id) {
         return follows;
     });
 
-    let following_clean = [];
+    const following_clean = [];
     following.forEach((follow) => {
         following_clean.push(follow.follow);
     });
 
-    let followed_clean = [];
+    const followed_clean = [];
     followed.forEach((follow) => {
         followed_clean.push(follow.user);
     });
@@ -100,7 +111,7 @@ function getFollowedUsers(req, res) {
         page = req.params.id;
     }
 
-    let itemsPerPage = 4;
+    const itemsPerPage = 4;
     FollowController.find({followed: userId}).populate('user').paginate(page, itemsPerPage, (err, follows, total) => {
         if (err) return res.status(500).send({message: 'Error en el servidor'});
         if (!follows) return res.status(404).send({message: 'No te sigue ningun usuario'});
@@ -117,15 +128,21 @@ function getFollowedUsers(req, res) {
 }
 
 function getMyFollows(req, res) {
-    let userId = req.user.sub;
+    const userId = req.user.sub;
     let find = FollowController.find({user: userId});
     if (req.params.followed) {
         find = FollowController.find({follow: userId});
     }
 
     find.populate('user follow').exec((err, follows) => {
-        if (err) return res.status(500).send({message: 'Error en el servidor'});
-        if (!follows) return res.status(404).send({message: 'No sigues ningun usuario'});
+        if (err) {
+            return res.status(500).send({message: 'Error en el servidor'});
+        }
+
+        if (!follows) {
+            return res.status(404).send({message: 'No sigues ningun usuario'});
+        }
+
         return res.status(200).send({follows});
     });
 }

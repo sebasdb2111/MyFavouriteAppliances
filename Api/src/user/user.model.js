@@ -1,8 +1,8 @@
 'use strict';
 
-let mongoose = require('mongoose');
-let Schema = mongoose.Schema;
-let UserSchema = Schema({
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
+const UserSchema = Schema({
     username: String,
     name: String,
     surname: String,
@@ -11,4 +11,4 @@ let UserSchema = Schema({
     role: String,
 });
 
-module.exports = mongoose.model('User', UserSchema); 
+module.exports = mongoose.model('User', UserSchema);
