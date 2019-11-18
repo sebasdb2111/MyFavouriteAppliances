@@ -13,13 +13,13 @@ function backupProduct(product) {
         const query = {"title": product.title};
         ProductController.findOne(query, (err, data) => {
             if (!data) {
-                const price = product.price;
-                const newPrice = Number(price.replace('€', ''));
+                // const price = product.price;
+                // const newPrice = Number(price.replace('€', ''));
                 const newProduct = new ProductController();
 
                 newProduct.category = product.category;
                 newProduct.title = product.title;
-                newProduct.price = newPrice;
+                // newProduct.price = newPrice;
                 newProduct.image = product.image;
                 newProduct.updatedAt = product.updatedAt;
                 newProduct.save((err, newProductStored) => {
@@ -69,35 +69,35 @@ function findProducts(category, orderBy, res) {
 
 function smallAppliances(req, res) {
     request(
-        'https://www.appliancesdelivered.ie/search/small-appliances',
+        'https://www.elcorteingles.es/electrodomesticos/cafeteras/cafeteras-de-capsulas/',
         (error, response, html) => {
-            if (!error && response.statusCode == 200) {
+            if (!error && response.statusCode === 200) {
                 const $ = cheerio.load(html);
                 const webpage = [];
 
-                $('.search-results-product').each((i, el) => {
+                $('#product-list').find('.product-list').children().each((i, el) => {
                     const resTitle = $(el)
-                        .find('.img-responsive')
-                        .attr('alt');
+                        .find('.js-product-click')
+                        .attr('title');
 
-                    const resPrice = $(el)
-                        .find('.section-title')
-                        .text();
+                    // const resPrice = $(el).find('.product-price')
+                    // .children()
+                    // .text();
 
                     const resImage = $(el)
-                        .find('.img-responsive')
+                        .find('.c12')
                         .attr('src');
 
                     webpage[i] = {
                         category: 'small-appliances',
                         title: resTitle,
-                        price: resPrice,
+                        // price: resPrice,
                         image: resImage,
                         updatedAt: today
                     };
                 });
-                webpage.map(dishwasher => {
-                    backupProduct(dishwasher, 'small-appliances');
+                webpage.map(smallAppliances => {
+                    backupProduct(smallAppliances, 'small-appliances');
                 });
                 findProducts('small-appliances', req.query.orderBy, res);
             } else {
@@ -109,34 +109,36 @@ function smallAppliances(req, res) {
 
 function dishwashers(req, res) {
     request(
-        'https://www.appliancesdelivered.ie/search/dishwashers',
+        'https://www.elcorteingles.es/electrodomesticos/lavavajillas/lavavajillas-60-cm/',
         (error, response, html) => {
-            if (!error && response.statusCode == 200) {
+            if (!error && response.statusCode === 200) {
                 const $ = cheerio.load(html);
                 const webpage = [];
 
-                $('.search-results-product').each((i, el) => {
-                    const resTitle = $(el)
-                        .find('.article-brand')
+                $('#product-list').find('.product-list').children().each((i, el) => {
+                    const resTitle = $(el).find('.product-image')
+                        .children('a')
+                        .children('img')
                         .attr('alt');
 
-                    const resPrice = $(el)
-                        .find('.section-title')
-                        .text();
+                    // const resPrice = $(el).find('.product-price')
+                    // .children()
+                    // .text();
 
-                    const resImage = $(el)
-                        .find('.sales-search-wrapper')
-                        .children()
+                    const resImage = $(el).find('.product-image')
+                        .children('a')
+                        .children('img')
                         .attr('src');
 
                     webpage[i] = {
                         category: 'dishwashers',
                         title: resTitle,
-                        price: resPrice,
+                        // price: resPrice,
                         image: resImage,
                         updatedAt: today
                     };
                 });
+
                 webpage.map(dishwasher => {
                     backupProduct(dishwasher, 'dishwasher');
                 });
