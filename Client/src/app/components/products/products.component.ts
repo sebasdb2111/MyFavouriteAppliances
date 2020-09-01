@@ -32,7 +32,7 @@ export class ProductsComponent implements OnInit {
   ) {
     this.stats = this._userService.getStats();
     this.url = GLOBAL.url;
-    this.title = 'Wellcome to MyFavouriteAppliances';
+    this.title = 'Wellcome to MyFavoriteAppliances';
     this.identity = this._userService.getIdentity();
   }
 

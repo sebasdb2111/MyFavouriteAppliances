@@ -19,7 +19,7 @@ export class AppComponent implements OnInit, DoCheck {
     private _router: Router,
     private _userService: UserService
   ) {
-    this.title = 'MyFavouriteAppliances';
+    this.title = 'MyFavoriteAppliances';
     this.url = GLOBAL.url;
   }
 
